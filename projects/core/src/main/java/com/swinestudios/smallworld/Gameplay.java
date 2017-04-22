@@ -19,6 +19,8 @@ import com.badlogic.gdx.graphics.Texture;
 public class Gameplay implements GameScreen{
 
 	public static int ID = 2;
+	
+	public static final int TILE_SIZE = 32;
 
 	public boolean paused = false;
 	public boolean gameOver = false;
@@ -29,6 +31,9 @@ public class Gameplay implements GameScreen{
 	public Sprite map00;
 	public Sprite currentMap;
 	
+	public Sprite bridgeTile;
+	public boolean bridgeSelected;
+	
 	public Player player;
 
 	@Override
@@ -38,9 +43,13 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void initialise(GameContainer gc){
+		bridgeTile = new Sprite(new Texture(Gdx.files.internal("island_bridge.png")));
+		bridgeTile.setAlpha(0.5f);
+		
 		map00 = new Sprite(new Texture(Gdx.files.internal("level00.png")));
-		adjustSprite(map00);
-		resizeSprite(map00);
+		
+		adjustSprite(map00, bridgeTile);
+		resizeSprite(map00, bridgeTile);
 		
 		currentMap = map00;
 		
@@ -59,12 +68,14 @@ public class Gameplay implements GameScreen{
 	public void postTransitionOut(Transition t){
 		paused = false;
 		gameOver = false;
+		bridgeSelected = false;
 	}
 
 	@Override
 	public void preTransitionIn(Transition t){
 		paused = false;
 		gameOver = false;
+		bridgeSelected = true;
 		
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -81,9 +92,15 @@ public class Gameplay implements GameScreen{
 	public void render(GameContainer gc, Graphics g){
 		g.setBackgroundColor(new Color(97 / 255f, 162 / 255f, 255 / 255f, 1));
 		
-		g.translate((float) Math.round(camX), (float) Math.round(camY)); //Camera movement
+		g.translate((float) Math.round(camX), (float) Math.round(camY)); //Camera movement TODO make it tile-based
 		
 		g.drawSprite(currentMap, 0, 0);
+		
+		if(!paused && bridgeSelected){
+			int mx = Gdx.input.getX() / TILE_SIZE * TILE_SIZE;
+			int my = Gdx.input.getY() / TILE_SIZE * TILE_SIZE;
+			g.drawSprite(bridgeTile, mx, my);
+		}
 
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){
