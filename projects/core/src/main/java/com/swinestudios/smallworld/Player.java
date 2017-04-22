@@ -4,6 +4,7 @@ import org.mini2Dx.core.geom.Rectangle;
 import org.mini2Dx.core.graphics.Graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
@@ -166,7 +167,37 @@ public class Player implements InputProcessor{
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return false;
+		if(button == Buttons.LEFT){
+			int[][] mapData = level.currentLevel;
+			int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
+			int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
+			//Check array bounds
+			if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
+				if(mapData[my][mx] == 0){
+					mapData[my][mx] = -1;
+					Bridge newBridge = new Bridge(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE, level);
+					//If spawned at the bottom OR there's no land below, draw bottom part of the bridge
+					if(my == mapData.length - 1 || mapData[my+1][mx] == 0){
+						newBridge.drawBottom = true;
+					}
+					else{
+						newBridge.drawBottom = false;
+					}
+					level.bridges.add(newBridge);
+					
+					//TODO debug print remove later
+					System.out.println("=================================");
+					//Print map data
+					for(int i = 0; i < mapData.length; i++){
+						for(int j = 0; j < mapData[i].length; j++){
+							System.out.print(mapData[i][j] + ", ");
+						}
+						System.out.println();
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override

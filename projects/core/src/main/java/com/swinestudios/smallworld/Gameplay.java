@@ -1,6 +1,7 @@
 package com.swinestudios.smallworld;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.mini2Dx.core.game.GameContainer;
 import org.mini2Dx.core.graphics.Graphics;
@@ -21,6 +22,26 @@ public class Gameplay implements GameScreen{
 	public static int ID = 2;
 	
 	public static final int TILE_SIZE = 32;
+	
+	public final int[][] level00 = {
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,2,0,0,0,0},
+			{0,0,0,0,1,1,0,0,0,0,0,0,2,2,4,2,2,0,0,0},
+			{0,0,0,4,4,1,1,1,0,0,0,0,1,4,4,4,1,0,0,0},
+			{0,0,2,2,3,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0},
+			{0,0,2,2,3,4,2,1,1,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,2,2,4,2,2,2,1,0,0,0,0,2,4,2,0,0,0,0},
+			{0,0,4,2,2,2,1,1,0,0,0,0,1,1,1,1,1,0,0,0},
+			{0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,1,2,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,2,2,2,2,2,2,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,1,2,2,2,2,2,1,1,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+			};
+	
+	public int[][] currentLevel;
 
 	public boolean paused = false;
 	public boolean gameOver = false;
@@ -28,6 +49,7 @@ public class Gameplay implements GameScreen{
 	public float camX, camY;
 
 	public ArrayList<Block> solids;
+	public ArrayList<Bridge> bridges;
 	public Sprite map00;
 	public Sprite currentMap;
 	
@@ -53,6 +75,8 @@ public class Gameplay implements GameScreen{
 		
 		currentMap = map00;
 		
+		bridges = new ArrayList<Bridge>();
+		
 		solids = new ArrayList<Block>();
 
 		solids.add(new Block(100, 50, 30, 55, this));
@@ -76,6 +100,11 @@ public class Gameplay implements GameScreen{
 		paused = false;
 		gameOver = false;
 		bridgeSelected = true;
+		
+		currentLevel = new int[level00.length][level00[0].length];
+		for(int i = 0; i < currentLevel.length; i++){
+			currentLevel[i] = Arrays.copyOf(level00[i], level00[i].length);
+		}
 		
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -107,6 +136,8 @@ public class Gameplay implements GameScreen{
 			solids.get(i).render(g);
 		}
 		
+		renderBridges(g);
+		
 		player.render(g);
 
 		if(paused){
@@ -122,6 +153,7 @@ public class Gameplay implements GameScreen{
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
 		if(!paused && !gameOver){
 			player.update(delta);
+			updateBridges(delta);
 			
 			camX = player.x - Gdx.graphics.getWidth() / 2;
 			camY = player.y - Gdx.graphics.getHeight() / 2;
@@ -144,6 +176,18 @@ public class Gameplay implements GameScreen{
 					paused = false;
 				}
 			}
+		}
+	}
+	
+	public void renderBridges(Graphics g){
+		for(int i = 0; i < bridges.size(); i++){
+			bridges.get(i).render(g);
+		}
+	}
+	
+	public void updateBridges(float delta){
+		for(int i = 0; i < bridges.size(); i++){
+			bridges.get(i).update(delta);
 		}
 	}
 	

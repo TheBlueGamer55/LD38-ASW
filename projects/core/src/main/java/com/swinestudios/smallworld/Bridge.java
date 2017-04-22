@@ -15,25 +15,50 @@ public class Bridge{
 	public Gameplay level;
 	public String type;
 	public Sprite bridgeTop, bridgeWhole;
+	public boolean drawBottom;
 
 	public Bridge(float x, float y, Gameplay level){
 		this.x = x;
 		this.y = y;
 		isActive = true;
+		drawBottom = false;
 		this.level = level;
 		type = "Bridge";
 		
-		bridgeTop = new Sprite(new Texture(Gdx.files.internal("island_bridge.png")));
-		bridgeWhole = new Sprite(new Texture(Gdx.files.internal("island_bridge2.png")));
+		bridgeTop = new Sprite(new Texture(Gdx.files.internal("island_bridge2.png")));
+		bridgeWhole = new Sprite(new Texture(Gdx.files.internal("island_bridge.png")));
+		adjustSprite(bridgeTop, bridgeWhole);
+		resizeSprite(bridgeTop, bridgeWhole);
 	}
 
 	public void render(Graphics g){
-		//TODO if land below this tile, don't draw the bottom part
-		g.drawSprite(bridgeWhole, this.x, this.y);
+		//If land below this tile, don't draw the bottom part
+		if(drawBottom){
+			g.drawSprite(bridgeWhole, this.x, this.y);
+		}
+		else{
+			g.drawSprite(bridgeTop, this.x, this.y);
+		}
 	}
 
 	public void update(float delta){
 		
+	}
+	
+	public void adjustSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			if(s != null){
+				s[i].setOrigin(0, 0);
+			}
+		}
+	}
+
+	public void resizeSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			if(s != null){ 
+				s[i].setSize(s[i].getWidth()*2, s[i].getHeight()*2);
+			}
+		}
 	}
 
 }
