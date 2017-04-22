@@ -19,6 +19,8 @@ public class Gameplay implements GameScreen{
 
 	public boolean paused = false;
 	public boolean gameOver = false;
+	
+	public float camX, camY;
 
 	public ArrayList<Block> solids;
 	
@@ -54,6 +56,8 @@ public class Gameplay implements GameScreen{
 		gameOver = false;
 		
 		player = new Player(320, 240, this);
+		camX = player.x - Gdx.graphics.getWidth() / 2;
+		camY = player.y - Gdx.graphics.getHeight() / 2;
 		Gdx.input.setInputProcessor(player);
 	}
 
@@ -64,6 +68,8 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void render(GameContainer gc, Graphics g){
+		g.translate((float) Math.round(camX), (float) Math.round(camY)); //Camera movement
+		
 		g.drawString("Gameplay screen", 140, 140);
 
 		//Solids rendering 
@@ -74,10 +80,10 @@ public class Gameplay implements GameScreen{
 		player.render(g);
 
 		if(paused){
-			g.drawString("Are you sure you want to quit? Y or N", 220, 240);
+			g.drawString("Are you sure you want to quit? Y or N", camX + 220, camY + 240);
 		}
 		if(gameOver){
-			g.drawString("Game over! Press Escape to go back to the main menu", 160, 240);
+			g.drawString("Game over! Press Escape to go back to the main menu", camX + 160, camY + 240);
 		}
 	}
 
@@ -85,6 +91,9 @@ public class Gameplay implements GameScreen{
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
 		if(!paused && !gameOver){
 			player.update(delta);
+			
+			camX = player.x - Gdx.graphics.getWidth() / 2;
+			camY = player.y - Gdx.graphics.getHeight() / 2;
 			
 			if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
 				paused = true;
