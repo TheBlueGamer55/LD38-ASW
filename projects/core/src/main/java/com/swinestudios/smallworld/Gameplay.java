@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.mini2Dx.core.game.GameContainer;
 import org.mini2Dx.core.graphics.Graphics;
+import org.mini2Dx.core.graphics.Sprite;
 import org.mini2Dx.core.screen.GameScreen;
 import org.mini2Dx.core.screen.ScreenManager;
 import org.mini2Dx.core.screen.Transition;
@@ -12,6 +13,8 @@ import org.mini2Dx.core.screen.transition.NullTransition;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Gameplay implements GameScreen{
 
@@ -23,6 +26,8 @@ public class Gameplay implements GameScreen{
 	public float camX, camY;
 
 	public ArrayList<Block> solids;
+	public Sprite map00;
+	public Sprite currentMap;
 	
 	public Player player;
 
@@ -33,6 +38,12 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void initialise(GameContainer gc){
+		map00 = new Sprite(new Texture(Gdx.files.internal("level00.png")));
+		adjustSprite(map00);
+		resizeSprite(map00);
+		
+		currentMap = map00;
+		
 		solids = new ArrayList<Block>();
 
 		solids.add(new Block(100, 50, 30, 55, this));
@@ -68,9 +79,11 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void render(GameContainer gc, Graphics g){
+		g.setBackgroundColor(new Color(97 / 255f, 162 / 255f, 255 / 255f, 1));
+		
 		g.translate((float) Math.round(camX), (float) Math.round(camY)); //Camera movement
 		
-		g.drawString("Gameplay screen", 140, 140);
+		g.drawSprite(currentMap, 0, 0);
 
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){
@@ -80,6 +93,7 @@ public class Gameplay implements GameScreen{
 		player.render(g);
 
 		if(paused){
+			g.setColor(Color.RED);
 			g.drawString("Are you sure you want to quit? Y or N", camX + 220, camY + 240);
 		}
 		if(gameOver){
@@ -112,6 +126,22 @@ public class Gameplay implements GameScreen{
 				if(Gdx.input.isKeyJustPressed(Keys.N)){
 					paused = false;
 				}
+			}
+		}
+	}
+	
+	public void adjustSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			if(s != null){
+				s[i].setOrigin(0, 0);
+			}
+		}
+	}
+
+	public void resizeSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			if(s != null){ 
+				s[i].setSize(s[i].getWidth()*2, s[i].getHeight()*2);
 			}
 		}
 	}

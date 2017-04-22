@@ -13,8 +13,8 @@ public class Player implements InputProcessor{
 	public float x, y;
 	public float velX, velY;
 
-	public final float moveSpeedX = 3.0f;
-	public final float moveSpeedY = 3.0f;
+	public final float moveSpeedX = 2.0f;
+	public final float moveSpeedY = 2.0f;
 
 	public boolean isActive;
 	public boolean walking;
