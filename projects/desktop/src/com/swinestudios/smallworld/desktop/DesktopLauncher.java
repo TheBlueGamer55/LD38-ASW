@@ -15,7 +15,7 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.foregroundFPS = 30;
 		config.backgroundFPS = 30;
-		config.title = "Sample Brick Game";
+		config.title = "A Small World - TO BE CHANGED";
 		new DesktopMini2DxGame(new ASmallWorld(), config);
 	}
 }
