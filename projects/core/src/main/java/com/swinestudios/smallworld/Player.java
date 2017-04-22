@@ -187,6 +187,7 @@ public class Player implements InputProcessor{
 					
 					//TODO debug print remove later
 					System.out.println("=================================");
+					System.out.println("# of islands: " + level.countIslands(level.currentLevel));
 					//Print map data
 					for(int i = 0; i < mapData.length; i++){
 						for(int j = 0; j < mapData[i].length; j++){
