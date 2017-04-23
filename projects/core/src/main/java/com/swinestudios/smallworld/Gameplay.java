@@ -67,6 +67,7 @@ public class Gameplay implements GameScreen{
 
 	public boolean paused = false;
 	public boolean gameOver = false;
+	public boolean movingToNextLevel = false;
 
 	public float camX, camY;
 
@@ -74,6 +75,8 @@ public class Gameplay implements GameScreen{
 	public ArrayList<Bridge> bridges;
 	public Sprite map00, map01;
 	public Sprite currentMap;
+	
+	public Sprite scoreMenu, pauseMenu;
 
 	public Sprite bridgeTile;
 	public boolean bridgeSelected;
@@ -89,6 +92,9 @@ public class Gameplay implements GameScreen{
 	public void initialise(GameContainer gc){
 		bridgeTile = new Sprite(new Texture(Gdx.files.internal("island_bridge.png")));
 		bridgeTile.setAlpha(0.5f);
+		
+		scoreMenu = new Sprite(new Texture(Gdx.files.internal("level_score_menu.png")));
+		pauseMenu = new Sprite(new Texture(Gdx.files.internal("pause_menu.png")));
 
 		map00 = new Sprite(new Texture(Gdx.files.internal("level00.png")));
 		map01 = new Sprite(new Texture(Gdx.files.internal("level01.png")));
@@ -116,6 +122,7 @@ public class Gameplay implements GameScreen{
 		paused = false;
 		gameOver = false;
 		bridgeSelected = false;
+		movingToNextLevel = false;
 	}
 
 	@Override
@@ -123,6 +130,7 @@ public class Gameplay implements GameScreen{
 		paused = false;
 		gameOver = false;
 		bridgeSelected = true;
+		movingToNextLevel = false;
 		levelCount = 0;
 		bridges.clear();
 
@@ -162,15 +170,29 @@ public class Gameplay implements GameScreen{
 		player.render(g);
 
 		//Draw transparent bridge icon
-		if(!paused && bridgeSelected){
+		if(!paused && !movingToNextLevel && bridgeSelected){
 			int mx = Gdx.input.getX() / TILE_SIZE * TILE_SIZE;
 			int my = Gdx.input.getY() / TILE_SIZE * TILE_SIZE;
 			g.drawSprite(bridgeTile, mx + camX, my + camY);
 		}
+		
+		g.setColor(Color.BLACK);
+		g.drawString("Bridge count: " + bridges.size(), camX + 8, camY + 12);
 
+		if(movingToNextLevel){
+			float middleX = Gdx.graphics.getWidth() / 2 - scoreMenu.getWidth() / 2 + camX;
+			float middleY = Gdx.graphics.getHeight() / 2 - scoreMenu.getHeight() / 2 + camY;
+			g.drawSprite(scoreMenu, middleX, middleY);
+			//g.drawString("BRIDGES USED: " + bridges.size(), middleX + camX + 142, middleY + camY + 117);
+			g.drawString(bridges.size() + "", middleX + 156, middleY + 67);
+			g.drawString((bridges.size() * 5) + "", middleX + 128, middleY + 117);
+		}
 		if(paused){
-			g.setColor(Color.RED);
-			g.drawString("Are you sure you want to quit? Y or N", camX + 220, camY + 240);
+			//g.setColor(Color.RED);
+			//g.drawString("Are you sure you want to quit? Y or N", camX + 220, camY + 240);
+			float middleX = Gdx.graphics.getWidth() / 2 - pauseMenu.getWidth() / 2 + camX;
+			float middleY = Gdx.graphics.getHeight() / 2 - pauseMenu.getHeight() / 2 + camY;
+			g.drawSprite(pauseMenu, middleX, middleY);
 		}
 		if(gameOver){
 			g.drawString("Game over! Press Escape to go back to the main menu", camX + 160, camY + 240);
@@ -179,7 +201,7 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
-		if(!paused && !gameOver){
+		if(!paused && !gameOver && !movingToNextLevel){
 			player.update(delta);
 			updateBridges(delta);
 
@@ -223,12 +245,18 @@ public class Gameplay implements GameScreen{
 					paused = false;
 				}
 			}
+			else if(movingToNextLevel){
+				if(Gdx.input.isKeyJustPressed(Keys.ENTER)){
+					moveToNextLevel();
+				}
+			}
 		}
 	}
 
 	public void moveToNextLevel(){
 		if(levelCount == 0){
 			bridges.clear();
+			movingToNextLevel = false;
 			player.x = 320;
 			player.y = 240;
 			levelCount = 1;
@@ -244,7 +272,7 @@ public class Gameplay implements GameScreen{
 		}
 	}
 
-	//TODO retry level
+	//TODO retry level?
 	public void restartLevel(){
 		bridges.clear();
 	}
