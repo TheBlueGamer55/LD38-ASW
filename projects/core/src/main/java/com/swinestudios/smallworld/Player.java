@@ -39,7 +39,7 @@ public class Player implements InputProcessor{
 		walking = false;
 		this.level = level;
 		type = "Player";
-		
+
 		hitbox = new Rectangle(x, y, 32, 32); 
 	}
 
@@ -147,6 +147,18 @@ public class Player implements InputProcessor{
 		}
 		y += velY;
 	}
+	
+	public Bridge getBridgeAt(int x, int y){
+		Bridge selectedBridge = null;
+		for(int i = 0; i < level.bridges.size(); i++){
+			Bridge b = level.bridges.get(i);
+			if(b.x / Gameplay.TILE_SIZE == x / Gameplay.TILE_SIZE && b.y / Gameplay.TILE_SIZE == y / Gameplay.TILE_SIZE){
+				selectedBridge = b;
+				break;
+			}
+		}
+		return selectedBridge;
+	}
 
 	//========================================Input Methods==============================================
 
@@ -168,32 +180,74 @@ public class Player implements InputProcessor{
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if(button == Buttons.LEFT){
-			int[][] mapData = level.currentLevel;
-			int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
-			int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
-			//Check array bounds
-			if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
-				if(mapData[my][mx] == 0){
-					mapData[my][mx] = -1;
-					Bridge newBridge = new Bridge(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE, level);
-					//If spawned at the bottom OR there's no land below, draw bottom part of the bridge
-					if(my == mapData.length - 1 || mapData[my+1][mx] == 0){
-						newBridge.drawBottom = true;
-					}
-					else{
-						newBridge.drawBottom = false;
-					}
-					level.bridges.add(newBridge);
-					
-					//TODO debug print remove later
-					System.out.println("=================================");
-					System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-					//Print map data
-					for(int i = 0; i < mapData.length; i++){
-						for(int j = 0; j < mapData[i].length; j++){
-							System.out.print(mapData[i][j] + ", ");
+			//Bridge spawning controls
+			if(level.bridgeSelected){
+				int[][] mapData = level.currentLevel;
+				int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
+				int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
+				//Check array bounds
+				if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
+					if(mapData[my][mx] == 0){
+						mapData[my][mx] = -1;
+						Bridge newBridge = new Bridge(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE, level);
+						//If spawned at the bottom OR there's no land below, draw bottom part of the bridge
+						if(my == mapData.length - 1 || mapData[my+1][mx] == 0){
+							newBridge.drawBottom = true;
 						}
-						System.out.println();
+						else{
+							newBridge.drawBottom = false;
+						}
+						level.bridges.add(newBridge);
+
+						//TODO debug print remove later
+						System.out.println("=================================");
+						System.out.println("# of islands: " + level.countIslands(level.currentLevel));
+						//Print map data
+						for(int i = 0; i < mapData.length; i++){
+							for(int j = 0; j < mapData[i].length; j++){
+								System.out.print(mapData[i][j] + ", ");
+							}
+							System.out.println();
+						}
+					}
+				}
+			}
+		}
+		
+		if(button == Buttons.RIGHT){
+			if(level.bridgeSelected){
+				int[][] mapData = level.currentLevel;
+				int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
+				int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
+				//Check array bounds
+				if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
+					if(mapData[my][mx] < 0){ //If clicked on a bridge
+						mapData[my][mx] = 0;
+						//If there is a bridge above this deleted bridge, draw the bottom part
+						if(my - 1 >= 0){
+							if(mapData[my - 1][mx] < 0){
+								Bridge above = getBridgeAt(mx * Gameplay.TILE_SIZE, (my - 1) * Gameplay.TILE_SIZE);
+								above.drawBottom = true;
+							}
+						}
+						//Delete the bridge object
+						Bridge selectedBridge = getBridgeAt(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE);
+						if(selectedBridge != null){
+							level.bridges.remove(selectedBridge);
+						}
+						else{
+							System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
+						}
+						//TODO debug print remove later
+						System.out.println("=================================");
+						System.out.println("# of islands: " + level.countIslands(level.currentLevel));
+						//Print map data
+						for(int i = 0; i < mapData.length; i++){
+							for(int j = 0; j < mapData[i].length; j++){
+								System.out.print(mapData[i][j] + ", ");
+							}
+							System.out.println();
+						}
 					}
 				}
 			}
