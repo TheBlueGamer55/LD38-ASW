@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 
 public class Player implements InputProcessor{ 
@@ -23,6 +24,8 @@ public class Player implements InputProcessor{
 	public Rectangle hitbox;
 	public Gameplay level;
 	public String type;
+	
+	public static Sound buildSfx = Gdx.audio.newSound(Gdx.files.internal("bridge_built.wav"));
 
 	//Controls/key bindings
 	public static final int LEFT = Keys.A;
@@ -198,6 +201,7 @@ public class Player implements InputProcessor{
 							newBridge.drawBottom = false;
 						}
 						level.bridges.add(newBridge);
+						buildSfx.play(0.75f);
 						//If all islands connected, move to next level
 						if(level.countIslands(level.currentLevel) == 1){
 							if(!level.movingToNextLevel){
