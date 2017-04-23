@@ -125,12 +125,6 @@ public class Gameplay implements GameScreen{
 
 		g.drawSprite(currentMap, 0, 0);
 
-		if(!paused && bridgeSelected){
-			int mx = Gdx.input.getX() / TILE_SIZE * TILE_SIZE;
-			int my = Gdx.input.getY() / TILE_SIZE * TILE_SIZE;
-			g.drawSprite(bridgeTile, mx, my);
-		}
-
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){
 			solids.get(i).render(g);
@@ -139,6 +133,13 @@ public class Gameplay implements GameScreen{
 		renderBridges(g);
 
 		player.render(g);
+
+		//Draw transparent bridge icon
+		if(!paused && bridgeSelected){
+			int mx = Gdx.input.getX() / TILE_SIZE * TILE_SIZE;
+			int my = Gdx.input.getY() / TILE_SIZE * TILE_SIZE;
+			g.drawSprite(bridgeTile, mx, my);
+		}
 
 		if(paused){
 			g.setColor(Color.RED);
@@ -180,13 +181,13 @@ public class Gameplay implements GameScreen{
 	}
 
 	//Returns the number of islands in a 2D array
-	//TODO isolated bridges count as islands, need to fix
 	public int countIslands(int[][] map){
 		boolean[][] visited = new boolean[currentLevel.length][currentLevel[0].length];
 		int count = 0;
 		for(int i = 0; i < visited.length; i++){
 			for(int j = 0; j < visited[i].length; j++){
-				if(map[i][j] != 0 && !visited[i][j]) {
+				//Don't count bridges (negative values) as starting points for islands
+				if(map[i][j] > 0 && !visited[i][j]) {
 					DFS(map, i, j, visited);
 					count++;
 				}
@@ -194,19 +195,19 @@ public class Gameplay implements GameScreen{
 		}
 		return count;
 	}
-	
+
 	private void DFS(int[][] map, int row, int col, boolean[][] visited){
 		int[] neighborRow = {-1, 1, 0, 0};
 		int[] neighborCol = {0, 0, -1, 1};
 
 		visited[row][col] = true;
-		
+
 		for(int i = 0; i < 4; i++){
 			int nRow = row + neighborRow[i];
 			int nCol = col + neighborCol[i];
 			//Check bounds and DFS unvisited solid cells
 			if(nRow >= 0 && nRow < visited.length && nCol >= 0 && nCol < visited[0].length
-				&& !visited[nRow][nCol] && map[nRow][nCol] != 0){
+					&& !visited[nRow][nCol] && map[nRow][nCol] != 0){
 				DFS(map, nRow, nCol, visited);
 			}
 		}
