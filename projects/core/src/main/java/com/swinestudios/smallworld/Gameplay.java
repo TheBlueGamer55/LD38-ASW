@@ -73,6 +73,7 @@ public class Gameplay implements GameScreen{
 
 	public ArrayList<Block> solids;
 	public ArrayList<Bridge> bridges;
+	public ArrayList<Shark> sharks;
 	public Sprite map00, map01;
 	public Sprite currentMap;
 	
@@ -105,6 +106,7 @@ public class Gameplay implements GameScreen{
 		currentMap = map00;
 
 		bridges = new ArrayList<Bridge>();
+		sharks = new ArrayList<Shark>();
 
 		solids = new ArrayList<Block>();
 
@@ -133,6 +135,7 @@ public class Gameplay implements GameScreen{
 		movingToNextLevel = false;
 		levelCount = 0;
 		bridges.clear();
+		sharks.clear();
 
 		currentLevel = new int[level00.length][level00[0].length];
 		for(int i = 0; i < currentLevel.length; i++){
@@ -140,6 +143,8 @@ public class Gameplay implements GameScreen{
 		}
 
 		currentMap = map00;
+		
+		sharks.add(new Shark(320, 240, this));
 
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -165,6 +170,7 @@ public class Gameplay implements GameScreen{
 			solids.get(i).render(g);
 		}
 
+		renderSharks(g);
 		renderBridges(g);
 
 		player.render(g);
@@ -203,6 +209,7 @@ public class Gameplay implements GameScreen{
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
 		if(!paused && !gameOver && !movingToNextLevel){
 			player.update(delta);
+			updateSharks(delta);
 			updateBridges(delta);
 
 			//Camera movement, viewport is 20 x 15 tiles, limit to current level size
@@ -319,6 +326,18 @@ public class Gameplay implements GameScreen{
 	public void updateBridges(float delta){
 		for(int i = 0; i < bridges.size(); i++){
 			bridges.get(i).update(delta);
+		}
+	}
+	
+	public void renderSharks(Graphics g){
+		for(int i = 0; i < sharks.size(); i++){
+			sharks.get(i).render(g);
+		}
+	}
+
+	public void updateSharks(float delta){
+		for(int i = 0; i < sharks.size(); i++){
+			sharks.get(i).update(delta);
 		}
 	}
 
