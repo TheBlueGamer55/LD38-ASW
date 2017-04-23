@@ -25,10 +25,10 @@ public class Player implements InputProcessor{
 	public String type;
 
 	//Controls/key bindings
-	public final int LEFT = Keys.A;
-	public final int RIGHT = Keys.D;
-	public final int UP = Keys.W;
-	public final int DOWN = Keys.S;
+	public static final int LEFT = Keys.A;
+	public static final int RIGHT = Keys.D;
+	public static final int UP = Keys.W;
+	public static final int DOWN = Keys.S;
 
 	public Player(float x, float y, Gameplay level){
 		this.x = x;
@@ -51,10 +51,10 @@ public class Player implements InputProcessor{
 	public void update(float delta){
 		playerMovement();
 
-		if(!Gdx.input.isKeyPressed(this.LEFT) && !Gdx.input.isKeyPressed(this.RIGHT)){
+		if(!Gdx.input.isKeyPressed(LEFT) && !Gdx.input.isKeyPressed(RIGHT)){
 			velX = 0;
 		}
-		if(!Gdx.input.isKeyPressed(this.UP) && !Gdx.input.isKeyPressed(this.DOWN)){
+		if(!Gdx.input.isKeyPressed(UP) && !Gdx.input.isKeyPressed(DOWN)){
 			velY = 0;
 		}
 
@@ -64,19 +64,19 @@ public class Player implements InputProcessor{
 
 	public void playerMovement(){
 		//Move Left
-		if(Gdx.input.isKeyPressed(this.LEFT)){
+		if(Gdx.input.isKeyPressed(LEFT)){
 			velX = -moveSpeedX;
 		}
 		//Move Right
-		if(Gdx.input.isKeyPressed(this.RIGHT)){
+		if(Gdx.input.isKeyPressed(RIGHT)){
 			velX = moveSpeedX;
 		}
 		//Move Up
-		if(Gdx.input.isKeyPressed(this.UP)){
+		if(Gdx.input.isKeyPressed(UP)){
 			velY = -moveSpeedY;
 		}
 		//Move Down
-		if(Gdx.input.isKeyPressed(this.DOWN)){
+		if(Gdx.input.isKeyPressed(DOWN)){
 			velY = moveSpeedY;
 		}
 		move();
@@ -181,10 +181,10 @@ public class Player implements InputProcessor{
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		if(button == Buttons.LEFT){
 			//Bridge spawning controls
-			if(level.bridgeSelected){
+			if(!level.paused && level.bridgeSelected){
 				int[][] mapData = level.currentLevel;
-				int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
-				int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
+				int mx = (Gdx.input.getX() + (int) level.camX) / Gameplay.TILE_SIZE;
+				int my = (Gdx.input.getY() + (int) level.camY)/ Gameplay.TILE_SIZE;
 				//Check array bounds
 				if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
 					if(mapData[my][mx] == 0){
@@ -198,17 +198,15 @@ public class Player implements InputProcessor{
 							newBridge.drawBottom = false;
 						}
 						level.bridges.add(newBridge);
+						//If all islands connected, move to next level
+						if(level.countIslands(level.currentLevel) == 1){
+							level.moveToNextLevel();
+						}
 
 						//TODO debug print remove later
 						System.out.println("=================================");
 						System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-						//Print map data
-						for(int i = 0; i < mapData.length; i++){
-							for(int j = 0; j < mapData[i].length; j++){
-								System.out.print(mapData[i][j] + ", ");
-							}
-							System.out.println();
-						}
+						level.printMapData();
 					}
 				}
 			}
@@ -217,8 +215,8 @@ public class Player implements InputProcessor{
 		if(button == Buttons.RIGHT){
 			if(level.bridgeSelected){
 				int[][] mapData = level.currentLevel;
-				int mx = Gdx.input.getX() / Gameplay.TILE_SIZE;
-				int my = Gdx.input.getY() / Gameplay.TILE_SIZE;
+				int mx = (Gdx.input.getX() + (int) level.camX) / Gameplay.TILE_SIZE;
+				int my = (Gdx.input.getY() + (int) level.camY)/ Gameplay.TILE_SIZE;
 				//Check array bounds
 				if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
 					if(mapData[my][mx] < 0){ //If clicked on a bridge
@@ -241,13 +239,7 @@ public class Player implements InputProcessor{
 						//TODO debug print remove later
 						System.out.println("=================================");
 						System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-						//Print map data
-						for(int i = 0; i < mapData.length; i++){
-							for(int j = 0; j < mapData[i].length; j++){
-								System.out.print(mapData[i][j] + ", ");
-							}
-							System.out.println();
-						}
+						level.printMapData();
 					}
 				}
 			}

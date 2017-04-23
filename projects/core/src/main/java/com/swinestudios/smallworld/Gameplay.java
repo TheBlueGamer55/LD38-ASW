@@ -41,7 +41,29 @@ public class Gameplay implements GameScreen{
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	};
 
+	public final int[][] level01 = {
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,0,0,0,0,0,0,0,0,0,0},
+			{0,3,3,2,2,3,2,2,0,0,0,0,0,0,1,1,1,0,0,0,0,0,2,2,3,2,0},
+			{0,1,2,4,4,2,4,2,1,0,0,0,0,0,0,0,0,0,0,0,3,3,2,3,2,3,3},
+			{0,0,1,1,1,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2,4,2,1,1},
+			{0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,3,2,2,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,4,4,4,3,0,0,0,0,2,1,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,4,4,4,3,0,0,0,3,3,0,0,0},
+			{0,0,0,0,3,3,3,0,0,0,0,0,1,2,1,2,1,2,1,0,0,0,3,3,0,0,0},
+			{0,0,0,3,3,3,3,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,1,2,0,0,0},
+			{0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
+			{0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			{0,0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0},
+			{0,0,1,2,2,2,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0},
+			{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+	};
+
 	public int[][] currentLevel;
+	public int levelCount;
 
 	public boolean paused = false;
 	public boolean gameOver = false;
@@ -50,7 +72,7 @@ public class Gameplay implements GameScreen{
 
 	public ArrayList<Block> solids;
 	public ArrayList<Bridge> bridges;
-	public Sprite map00;
+	public Sprite map00, map01;
 	public Sprite currentMap;
 
 	public Sprite bridgeTile;
@@ -69,9 +91,10 @@ public class Gameplay implements GameScreen{
 		bridgeTile.setAlpha(0.5f);
 
 		map00 = new Sprite(new Texture(Gdx.files.internal("level00.png")));
+		map01 = new Sprite(new Texture(Gdx.files.internal("level01.png")));
 
-		adjustSprite(map00, bridgeTile);
-		resizeSprite(map00, bridgeTile);
+		adjustSprite(map00, map01, bridgeTile);
+		resizeSprite(map00, map01, bridgeTile);
 
 		currentMap = map00;
 
@@ -100,11 +123,15 @@ public class Gameplay implements GameScreen{
 		paused = false;
 		gameOver = false;
 		bridgeSelected = true;
+		levelCount = 0;
+		bridges.clear();
 
 		currentLevel = new int[level00.length][level00[0].length];
 		for(int i = 0; i < currentLevel.length; i++){
 			currentLevel[i] = Arrays.copyOf(level00[i], level00[i].length);
 		}
+
+		currentMap = map00;
 
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -121,7 +148,7 @@ public class Gameplay implements GameScreen{
 	public void render(GameContainer gc, Graphics g){
 		g.setBackgroundColor(new Color(97 / 255f, 162 / 255f, 255 / 255f, 1));
 
-		g.translate((float) Math.round(camX), (float) Math.round(camY)); //Camera movement TODO make it tile-based
+		g.translate((float) Math.round(camX), (float) Math.round(camY));
 
 		g.drawSprite(currentMap, 0, 0);
 
@@ -138,7 +165,7 @@ public class Gameplay implements GameScreen{
 		if(!paused && bridgeSelected){
 			int mx = Gdx.input.getX() / TILE_SIZE * TILE_SIZE;
 			int my = Gdx.input.getY() / TILE_SIZE * TILE_SIZE;
-			g.drawSprite(bridgeTile, mx, my);
+			g.drawSprite(bridgeTile, mx + camX, my + camY);
 		}
 
 		if(paused){
@@ -156,8 +183,27 @@ public class Gameplay implements GameScreen{
 			player.update(delta);
 			updateBridges(delta);
 
-			camX = player.x - Gdx.graphics.getWidth() / 2;
-			camY = player.y - Gdx.graphics.getHeight() / 2;
+			//Camera movement, viewport is 20 x 15 tiles, limit to current level size
+			if(Gdx.input.isKeyJustPressed(Player.LEFT)){
+				if(camX > 0){
+					camX -= TILE_SIZE;
+				}
+			}
+			if(Gdx.input.isKeyJustPressed(Player.RIGHT)){
+				if(camX + 20 * TILE_SIZE < currentLevel[0].length * TILE_SIZE){
+					camX += TILE_SIZE;
+				}
+			}
+			if(Gdx.input.isKeyJustPressed(Player.UP)){
+				if(camY > 0){
+					camY -= TILE_SIZE;
+				}
+			}
+			if(Gdx.input.isKeyJustPressed(Player.DOWN)){
+				if(camY + 15 * TILE_SIZE < currentLevel.length * TILE_SIZE){
+					camY += TILE_SIZE;
+				}
+			}
 
 			if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
 				paused = true;
@@ -178,6 +224,29 @@ public class Gameplay implements GameScreen{
 				}
 			}
 		}
+	}
+
+	public void moveToNextLevel(){
+		if(levelCount == 0){
+			bridges.clear();
+			player.x = 320;
+			player.y = 240;
+			levelCount = 1;
+			currentLevel = new int[level01.length][level01[0].length];
+			for(int i = 0; i < currentLevel.length; i++){
+				currentLevel[i] = Arrays.copyOf(level01[i], level01[i].length);
+			}
+
+			currentMap = map01;
+		}
+		else if(levelCount == 1){
+			System.out.println("Game won!");
+		}
+	}
+
+	//TODO retry level
+	public void restartLevel(){
+		bridges.clear();
 	}
 
 	//Returns the number of islands in a 2D array
@@ -222,6 +291,15 @@ public class Gameplay implements GameScreen{
 	public void updateBridges(float delta){
 		for(int i = 0; i < bridges.size(); i++){
 			bridges.get(i).update(delta);
+		}
+	}
+
+	public void printMapData(){
+		for(int i = 0; i < currentLevel.length; i++){
+			for(int j = 0; j < currentLevel[i].length; j++){
+				System.out.print(currentLevel[i][j] + ", ");
+			}
+			System.out.println();
 		}
 	}
 
