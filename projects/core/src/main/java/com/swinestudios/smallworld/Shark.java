@@ -17,7 +17,6 @@ public class Shark {
 	public final float moveSpeedY = 2.0f;
 
 	public boolean isActive;
-	public boolean walking;
 	public boolean facingLeft, facingRight;
 
 	public Sprite left1, left2, right1, right2;
@@ -34,7 +33,6 @@ public class Shark {
 		velX = 0;
 		velY = 0;
 		isActive = true;
-		walking = false;
 		this.level = level;
 		type = "Shark";
 
@@ -115,9 +113,6 @@ public class Shark {
 		}
 	}
 
-	/*
-	 * Checks if there is a collision if the player was at the given position.
-	 */
 	public boolean isColliding(Rectangle other, float x, float y){
 		if(other == this.hitbox){ //Make sure solid isn't stuck on itself
 			return false;
@@ -129,9 +124,6 @@ public class Shark {
 		return false;
 	}
 
-	/*
-	 * Helper method for checking whether there is a collision if the player moves at the given position
-	 */
 	public boolean collisionExistsAt(float x, float y){
 		for(int i = 0; i < level.solids.size(); i++){
 			Rectangle solid = level.solids.get(i);

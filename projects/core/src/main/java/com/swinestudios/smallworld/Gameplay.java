@@ -75,6 +75,7 @@ public class Gameplay implements GameScreen{
 	public ArrayList<Block> solids;
 	public ArrayList<Bridge> bridges;
 	public ArrayList<Shark> sharks;
+	public ArrayList<Person> people;
 	public Sprite map00, map01;
 	public Sprite currentMap;
 	
@@ -109,6 +110,7 @@ public class Gameplay implements GameScreen{
 		bridges = new ArrayList<Bridge>();
 		sharks = new ArrayList<Shark>();
 		solids = new ArrayList<Block>();
+		people = new ArrayList<Person>();
 	}
 
 	@Override
@@ -135,6 +137,7 @@ public class Gameplay implements GameScreen{
 		bridges.clear();
 		solids.clear();
 		sharks.clear();
+		people.clear();
 
 		currentLevel = new int[level00.length][level00[0].length];
 		for(int i = 0; i < currentLevel.length; i++){
@@ -147,6 +150,11 @@ public class Gameplay implements GameScreen{
 		Shark testShark = new Shark(320, 240, this);
 		testShark.velX = 0.5f;
 		sharks.add(testShark);
+		
+		Person randPerson = new Person(190, 220, 'x', this);
+		people.add(randPerson);
+		people.add(new Person(190, 160, 'x', this));
+		people.add(new Person(150, 200, 'x', this));
 
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -174,6 +182,7 @@ public class Gameplay implements GameScreen{
 
 		renderSharks(g);
 		renderBridges(g);
+		renderPeople(g);
 
 		player.render(g);
 
@@ -213,6 +222,7 @@ public class Gameplay implements GameScreen{
 			player.update(delta);
 			updateSharks(delta);
 			updateBridges(delta);
+			updatePeople(delta);
 
 			//Camera movement, viewport is 20 x 15 tiles, limit to current level size
 			if(Gdx.input.isKeyJustPressed(Player.LEFT)){
@@ -264,7 +274,9 @@ public class Gameplay implements GameScreen{
 
 	public void moveToNextLevel(){
 		if(levelCount == 0){
+			people.clear();
 			bridges.clear();
+			sharks.clear();
 			bridgeCount = 0;
 			solids.clear();
 			movingToNextLevel = false;
@@ -278,15 +290,11 @@ public class Gameplay implements GameScreen{
 
 			currentMap = map01;
 			generateSolidsFrom(currentLevel);
+			//TODO spawn sharks for new level, spawn people for new level
 		}
 		else if(levelCount == 1){
 			System.out.println("Game won!");
 		}
-	}
-
-	//TODO retry level?
-	public void restartLevel(){
-		bridges.clear();
 	}
 
 	//Returns the number of islands in a 2D array
@@ -343,6 +351,18 @@ public class Gameplay implements GameScreen{
 	public void updateSharks(float delta){
 		for(int i = 0; i < sharks.size(); i++){
 			sharks.get(i).update(delta);
+		}
+	}
+	
+	public void renderPeople(Graphics g){
+		for(int i = 0; i < people.size(); i++){
+			people.get(i).render(g);
+		}
+	}
+
+	public void updatePeople(float delta){
+		for(int i = 0; i < people.size(); i++){
+			people.get(i).update(delta);
 		}
 	}
 	
