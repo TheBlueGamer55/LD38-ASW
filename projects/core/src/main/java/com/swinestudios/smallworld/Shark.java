@@ -91,7 +91,7 @@ public class Shark {
 	}
 
 	public void sharkMovement(){
-		checkBridgeCollision();
+		//checkBridgeCollision();
 		move();
 	}
 
@@ -149,6 +149,17 @@ public class Shark {
 				velX = -velX;
 			}
 		}
+		for(int i = 0; i < level.bridges.size(); i++){ //Also check for bridge hitboxes
+			Rectangle solid = level.bridges.get(i).hitbox;
+			if(isColliding(solid, x + velX, y)){
+				while(!isColliding(solid, x + Math.signum(velX), y)){
+					x += Math.signum(velX);
+				}
+				velX = -velX;
+				level.player.deleteBridge(level.bridges.get(i));
+				System.out.println("Deleting bridge....");
+			}
+		}
 		x += velX;
 	}
 
@@ -160,6 +171,16 @@ public class Shark {
 					y += Math.signum(velY);
 				}
 				velY = -velY;
+			}
+		}
+		for(int i = 0; i < level.bridges.size(); i++){ //Also check for bridge hitboxes
+			Rectangle solid = level.bridges.get(i).hitbox;
+			if(isColliding(solid, x, y + velY)){
+				while(!isColliding(solid, x, y + Math.signum(velY))){
+					y += Math.signum(velY);
+				}
+				velY = -velY;
+				level.player.deleteBridge(level.bridges.get(i));
 			}
 		}
 		y += velY;

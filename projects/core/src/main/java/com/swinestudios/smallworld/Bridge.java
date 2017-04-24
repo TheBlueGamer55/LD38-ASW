@@ -43,6 +43,9 @@ public class Bridge{
 		else{
 			g.drawSprite(bridgeTop, this.x, this.y);
 		}
+		/*g.setColor(Color.FIREBRICK);
+		g.drawCircle(x + 16, y + 20, 12);
+		g.fillRect(x, y, hitbox.getWidth(), hitbox.getHeight());*/
 	}
 
 	public void update(float delta){

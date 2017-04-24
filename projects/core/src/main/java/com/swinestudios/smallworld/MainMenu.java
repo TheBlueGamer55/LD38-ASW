@@ -12,6 +12,7 @@ import org.mini2Dx.core.screen.transition.NullTransition;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -75,6 +76,9 @@ public class MainMenu implements GameScreen{
 	public void render(GameContainer gc, Graphics g){
 		g.setFont(font);
 		g.drawSprite(background, 0, 0);
+
+		g.setColor(new Color(255 / 255f, 255 / 255f, 255 / 255f, 1));
+		g.drawString("Best run: " + Gameplay.minCost, 216, 426);
 	}
 
 	@Override

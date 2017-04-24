@@ -20,6 +20,9 @@ import com.badlogic.gdx.graphics.Texture;
 public class Gameplay implements GameScreen{
 
 	public static int ID = 2;
+	
+	public static int score; 
+	public static int minCost = 999999999;
 
 	public static final int TILE_SIZE = 32;
 
@@ -126,6 +129,7 @@ public class Gameplay implements GameScreen{
 		gameOver = false;
 		bridgeSelected = false;
 		movingToNextLevel = false;
+		score = 0;
 	}
 
 	@Override
@@ -136,6 +140,7 @@ public class Gameplay implements GameScreen{
 		movingToNextLevel = false;
 		levelCount = 0;
 		bridgeCount = 0;
+		score = 0;
 		bridges.clear();
 		solids.clear();
 		sharks.clear();
@@ -221,6 +226,7 @@ public class Gameplay implements GameScreen{
 			//g.drawString("BRIDGES USED: " + bridges.size(), middleX + camX + 142, middleY + camY + 117);
 			g.drawString(bridgeCount + "", middleX + 156, middleY + 67);
 			g.drawString((bridgeCount * 5) + "", middleX + 128, middleY + 117);
+			score += bridgeCount * 5;
 		}
 		if(paused){
 			//g.setColor(Color.RED);
@@ -323,6 +329,9 @@ public class Gameplay implements GameScreen{
 		}
 		else if(levelCount == 1){
 			System.out.println("Game won!");
+			if(score < minCost){
+				minCost = score;
+			}
 		}
 	}
 

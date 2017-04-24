@@ -164,8 +164,8 @@ public class Player implements InputProcessor{
 	}
 
 	public void deleteBridge(Bridge b){
-		int mx = (int) ((b.x + 4 + (int) level.camX) / Gameplay.TILE_SIZE);
-		int my = (int) ((b.y + 4 + (int) level.camY)/ Gameplay.TILE_SIZE);
+		int mx = (int) ((b.x + 4) / Gameplay.TILE_SIZE);
+		int my = (int) ((b.y + 4)/ Gameplay.TILE_SIZE);
 		int[][] mapData = level.currentLevel;
 		//Check array bounds
 		if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
