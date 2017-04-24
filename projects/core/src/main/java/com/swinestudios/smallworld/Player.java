@@ -24,7 +24,7 @@ public class Player implements InputProcessor{
 	public Rectangle hitbox;
 	public Gameplay level;
 	public String type;
-	
+
 	public static Sound buildSfx = Gdx.audio.newSound(Gdx.files.internal("bridge_built.wav"));
 
 	//Controls/key bindings
@@ -163,6 +163,37 @@ public class Player implements InputProcessor{
 		return selectedBridge;
 	}
 
+	public void deleteBridge(Bridge b){
+		int mx = (int) ((b.x + 4 + (int) level.camX) / Gameplay.TILE_SIZE);
+		int my = (int) ((b.y + 4 + (int) level.camY)/ Gameplay.TILE_SIZE);
+		int[][] mapData = level.currentLevel;
+		//Check array bounds
+		if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){
+			if(mapData[my][mx] < 0){
+				mapData[my][mx] = 0;
+				//If there is a bridge above this deleted bridge, draw the bottom part
+				if(my - 1 >= 0){
+					if(mapData[my - 1][mx] < 0){
+						Bridge above = getBridgeAt(mx * Gameplay.TILE_SIZE, (my - 1) * Gameplay.TILE_SIZE);
+						above.drawBottom = true;
+					}
+				}
+				//Delete the bridge object
+				Bridge selectedBridge = getBridgeAt(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE);
+				if(selectedBridge != null){
+					level.bridges.remove(selectedBridge);
+				}
+				else{
+					System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
+				}
+				//TODO debug print remove later
+				System.out.println("=================================");
+				System.out.println("# of islands: " + level.countIslands(level.currentLevel));
+				level.printMapData();
+			}
+		}
+	}
+
 	//========================================Input Methods==============================================
 
 	@Override
@@ -201,6 +232,7 @@ public class Player implements InputProcessor{
 							newBridge.drawBottom = false;
 						}
 						level.bridges.add(newBridge);
+						level.bridgeCount++;
 						buildSfx.play(0.75f);
 						//If all islands connected, move to next level
 						if(level.countIslands(level.currentLevel) == 1){

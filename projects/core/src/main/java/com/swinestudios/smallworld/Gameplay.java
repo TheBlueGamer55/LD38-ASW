@@ -64,6 +64,7 @@ public class Gameplay implements GameScreen{
 
 	public int[][] currentLevel;
 	public int levelCount;
+	public int bridgeCount;
 
 	public boolean paused = false;
 	public boolean gameOver = false;
@@ -107,11 +108,7 @@ public class Gameplay implements GameScreen{
 
 		bridges = new ArrayList<Bridge>();
 		sharks = new ArrayList<Shark>();
-
 		solids = new ArrayList<Block>();
-
-		solids.add(new Block(100, 50, 30, 55, this));
-		solids.add(new Block(0, 234, 100, 16, this));
 	}
 
 	@Override
@@ -134,7 +131,9 @@ public class Gameplay implements GameScreen{
 		bridgeSelected = true;
 		movingToNextLevel = false;
 		levelCount = 0;
+		bridgeCount = 0;
 		bridges.clear();
+		solids.clear();
 		sharks.clear();
 
 		currentLevel = new int[level00.length][level00[0].length];
@@ -143,8 +142,11 @@ public class Gameplay implements GameScreen{
 		}
 
 		currentMap = map00;
+		generateSolidsFrom(currentLevel);
 		
-		sharks.add(new Shark(320, 240, this));
+		Shark testShark = new Shark(320, 240, this);
+		testShark.velX = 0.5f;
+		sharks.add(testShark);
 
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -183,15 +185,15 @@ public class Gameplay implements GameScreen{
 		}
 		
 		g.setColor(Color.BLACK);
-		g.drawString("Bridge count: " + bridges.size(), camX + 8, camY + 12);
+		g.drawString("Bridge count: " + bridgeCount, camX + 8, camY + 12);
 
 		if(movingToNextLevel){
 			float middleX = Gdx.graphics.getWidth() / 2 - scoreMenu.getWidth() / 2 + camX;
 			float middleY = Gdx.graphics.getHeight() / 2 - scoreMenu.getHeight() / 2 + camY;
 			g.drawSprite(scoreMenu, middleX, middleY);
 			//g.drawString("BRIDGES USED: " + bridges.size(), middleX + camX + 142, middleY + camY + 117);
-			g.drawString(bridges.size() + "", middleX + 156, middleY + 67);
-			g.drawString((bridges.size() * 5) + "", middleX + 128, middleY + 117);
+			g.drawString(bridgeCount + "", middleX + 156, middleY + 67);
+			g.drawString((bridgeCount * 5) + "", middleX + 128, middleY + 117);
 		}
 		if(paused){
 			//g.setColor(Color.RED);
@@ -263,6 +265,8 @@ public class Gameplay implements GameScreen{
 	public void moveToNextLevel(){
 		if(levelCount == 0){
 			bridges.clear();
+			bridgeCount = 0;
+			solids.clear();
 			movingToNextLevel = false;
 			player.x = 320;
 			player.y = 240;
@@ -273,6 +277,7 @@ public class Gameplay implements GameScreen{
 			}
 
 			currentMap = map01;
+			generateSolidsFrom(currentLevel);
 		}
 		else if(levelCount == 1){
 			System.out.println("Game won!");
@@ -338,6 +343,17 @@ public class Gameplay implements GameScreen{
 	public void updateSharks(float delta){
 		for(int i = 0; i < sharks.size(); i++){
 			sharks.get(i).update(delta);
+		}
+	}
+	
+	public void generateSolidsFrom(int[][] map){
+		for(int i = 0; i < map.length; i++){
+			for(int j = 0; j < map[i].length; j++){
+				if(map[i][j] > 0){
+					Block s = new Block(j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE, this);
+					solids.add(s);
+				}
+			}
 		}
 	}
 

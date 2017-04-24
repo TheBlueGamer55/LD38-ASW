@@ -19,7 +19,7 @@ public class Shark {
 	public boolean isActive;
 	public boolean walking;
 	public boolean facingLeft, facingRight;
-	
+
 	public Sprite left1, left2, right1, right2;
 	public Animation<Sprite> sharkLeft, sharkRight, sharkCurrent;
 	public final float animationSpeed = 0.2f; 
@@ -37,26 +37,26 @@ public class Shark {
 		walking = false;
 		this.level = level;
 		type = "Shark";
-		
+
 		right1 = new Sprite(new Texture(Gdx.files.internal("shark_right01.png")));
 		right2 = new Sprite(new Texture(Gdx.files.internal("shark_right02.png")));
 		left1 = new Sprite(new Texture(Gdx.files.internal("shark_left01.png")));
 		left2 = new Sprite(new Texture(Gdx.files.internal("shark_left02.png")));		
-		
+
 		adjustSprite(right1, right2, left1, left2);
 		resizeSprite(right1, right2, left1, left2);
-		
+
 		sharkLeft = new Animation<Sprite>();
 		sharkRight = new Animation<Sprite>();
-		
+
 		sharkLeft.addFrame(left1, animationSpeed);
 		sharkLeft.addFrame(left2, animationSpeed);
 		sharkLeft.setLooping(true);
-		
+
 		sharkRight.addFrame(right1, animationSpeed);
 		sharkRight.addFrame(right2, animationSpeed);
 		sharkRight.setLooping(true);
-		
+
 		facingLeft = true;
 		facingRight = false;
 		sharkCurrent = sharkLeft;
@@ -71,12 +71,21 @@ public class Shark {
 	public void update(float delta){
 		sharkCurrent.update(delta);
 		sharkMovement();
-		
+
 		if(facingLeft){
 			sharkCurrent = sharkLeft;
 		}
 		else if(facingRight){
 			sharkCurrent = sharkRight;
+		}
+		
+		if(velX > 0){
+			facingRight = true;
+			facingLeft = false;
+		}
+		if(velX < 0){
+			facingLeft = true;
+			facingRight = false;
 		}
 
 		hitbox.setX(this.x);
@@ -84,7 +93,26 @@ public class Shark {
 	}
 
 	public void sharkMovement(){
-		
+		checkBridgeCollision();
+		move();
+	}
+
+	public void checkBridgeCollision(){
+		for(int i = 0; i < level.bridges.size(); i++){
+			Bridge temp = level.bridges.get(i);
+			if(temp != null && temp.isActive){
+				if(isColliding(temp.hitbox, x + velX, y)){
+					temp.isActive = false;
+					level.player.deleteBridge(temp);
+					velX = -velX;
+				}
+				else if(isColliding(temp.hitbox, x, y + velY)){
+					temp.isActive = false;
+					level.player.deleteBridge(temp);
+					velY = -velY;
+				}
+			}
+		}
 	}
 
 	/*
@@ -119,10 +147,6 @@ public class Shark {
 		moveY();
 	}
 
-	/*
-	 * Move horizontally in the direction of the x-velocity vector. If there is a collision in
-	 * this direction, step pixel by pixel up until this hits the solid.
-	 */
 	public void moveX(){
 		for(int i = 0; i < level.solids.size(); i++){
 			Rectangle solid = level.solids.get(i);
@@ -130,16 +154,12 @@ public class Shark {
 				while(!isColliding(solid, x + Math.signum(velX), y)){
 					x += Math.signum(velX);
 				}
-				velX = 0;
+				velX = -velX;
 			}
 		}
 		x += velX;
 	}
 
-	/*
-	 * Move vertically in the direction of the y-velocity vector. If there is a collision in
-	 * this direction, step pixel by pixel up until this hits the solid.
-	 */
 	public void moveY(){
 		for(int i = 0; i < level.solids.size(); i++){
 			Rectangle solid = level.solids.get(i);
@@ -147,7 +167,7 @@ public class Shark {
 				while(!isColliding(solid, x, y + Math.signum(velY))){
 					y += Math.signum(velY);
 				}
-				velY = 0;
+				velY = -velY;
 			}
 		}
 		y += velY;
@@ -164,7 +184,7 @@ public class Shark {
 		}
 		return selectedBridge;
 	}
-	
+
 	public void adjustSprite(Sprite... s){
 		for(int i = 0; i < s.length; i++){
 			if(s != null){

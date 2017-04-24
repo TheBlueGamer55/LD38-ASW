@@ -1,5 +1,6 @@
 package com.swinestudios.smallworld;
 
+import org.mini2Dx.core.geom.Rectangle;
 import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.graphics.Sprite;
 
@@ -13,6 +14,7 @@ public class Bridge{
 	public boolean isActive;
 
 	public Gameplay level;
+	public Rectangle hitbox;
 	public String type;
 	public Sprite bridgeTop, bridgeWhole;
 	public boolean drawBottom;
@@ -29,6 +31,8 @@ public class Bridge{
 		bridgeWhole = new Sprite(new Texture(Gdx.files.internal("island_bridge.png")));
 		adjustSprite(bridgeTop, bridgeWhole);
 		resizeSprite(bridgeTop, bridgeWhole);
+		
+		hitbox = new Rectangle(x, y, 32, 40);
 	}
 
 	public void render(Graphics g){
