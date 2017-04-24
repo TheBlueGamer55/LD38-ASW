@@ -182,9 +182,8 @@ public class Gameplay implements GameScreen{
 
 		g.drawSprite(currentMap, 0, 0);
 		
-		
-		g.drawRect(Gdx.input.getX() + camX, Gdx.input.getY() + camY, 8, 18);
-		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));
+		/*g.drawRect(Gdx.input.getX() + camX, Gdx.input.getY() + camY, 8, 18);
+		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));*/
 
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){

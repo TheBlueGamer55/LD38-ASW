@@ -25,6 +25,7 @@ public class Player implements InputProcessor{
 	public String type;
 
 	public static Sound buildSfx = Gdx.audio.newSound(Gdx.files.internal("bridge_built.wav"));
+	public static Sound destroySfx = Gdx.audio.newSound(Gdx.files.internal("bridge_destroyed.wav"));
 
 	//Controls/key bindings
 	public static final int LEFT = Keys.A;
@@ -181,6 +182,7 @@ public class Player implements InputProcessor{
 				Bridge selectedBridge = getBridgeAt(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE);
 				if(selectedBridge != null){
 					level.bridges.remove(selectedBridge);
+					destroySfx.play();
 				}
 				else{
 					System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
@@ -270,6 +272,7 @@ public class Player implements InputProcessor{
 							Bridge selectedBridge = getBridgeAt(mx * Gameplay.TILE_SIZE, my * Gameplay.TILE_SIZE);
 							if(selectedBridge != null){
 								level.bridges.remove(selectedBridge);
+								destroySfx.play();
 							}
 							else{
 								System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
