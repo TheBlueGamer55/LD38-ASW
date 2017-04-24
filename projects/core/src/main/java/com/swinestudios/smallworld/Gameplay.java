@@ -76,6 +76,7 @@ public class Gameplay implements GameScreen{
 	public ArrayList<Bridge> bridges;
 	public ArrayList<Shark> sharks;
 	public ArrayList<Person> people;
+	public ArrayList<Wood> logs;
 	public Sprite map00, map01;
 	public Sprite currentMap;
 	
@@ -111,6 +112,7 @@ public class Gameplay implements GameScreen{
 		sharks = new ArrayList<Shark>();
 		solids = new ArrayList<Block>();
 		people = new ArrayList<Person>();
+		logs = new ArrayList<Wood>();
 	}
 
 	@Override
@@ -138,6 +140,7 @@ public class Gameplay implements GameScreen{
 		solids.clear();
 		sharks.clear();
 		people.clear();
+		logs.clear();
 
 		currentLevel = new int[level00.length][level00[0].length];
 		for(int i = 0; i < currentLevel.length; i++){
@@ -146,6 +149,7 @@ public class Gameplay implements GameScreen{
 
 		currentMap = map00;
 		generateSolidsFrom(currentLevel);
+		//Hard-coded spawn points for people in lvl1
 		people.add(new Person(190, 160, 'x', this));
 		people.add(new Person(150, 200, 'x', this));
 		people.add(new Person(142, 114, 'x', this));
@@ -158,6 +162,9 @@ public class Gameplay implements GameScreen{
 		
 		people.add(new Person(226, 380, 'x', this));
 		people.add(new Person(313, 386, 'x', this));
+		
+		//TODO test remove later
+		logs.add(new Wood(157, 159, this));
 		
 		Shark testShark = new Shark(320, 240, this);
 		testShark.velX = 0.5f;
@@ -186,12 +193,13 @@ public class Gameplay implements GameScreen{
 		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));*/
 
 		//Solids rendering 
-		for(int i = 0; i < solids.size(); i++){
+		/*for(int i = 0; i < solids.size(); i++){
 			solids.get(i).render(g);
-		}
+		}*/
 
 		renderSharks(g);
 		renderBridges(g);
+		renderLogs(g);
 		renderPeople(g);
 
 		player.render(g);
@@ -232,6 +240,7 @@ public class Gameplay implements GameScreen{
 			player.update(delta);
 			updateSharks(delta);
 			updateBridges(delta);
+			updateLogs(delta);
 			updatePeople(delta);
 
 			//Camera movement, viewport is 20 x 15 tiles, limit to current level size
@@ -258,6 +267,7 @@ public class Gameplay implements GameScreen{
 
 			if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
 				paused = true;
+				MainMenu.selectSound.play();
 			}
 		}
 		else{
@@ -276,6 +286,7 @@ public class Gameplay implements GameScreen{
 			}
 			else if(movingToNextLevel){
 				if(Gdx.input.isKeyJustPressed(Keys.ENTER)){
+					MainMenu.selectSound.play(); //TODO start of level sound?
 					moveToNextLevel();
 				}
 			}
@@ -381,6 +392,18 @@ public class Gameplay implements GameScreen{
 	public void updatePeople(float delta){
 		for(int i = 0; i < people.size(); i++){
 			people.get(i).update(delta);
+		}
+	}
+	
+	public void renderLogs(Graphics g){
+		for(int i = 0; i < logs.size(); i++){
+			logs.get(i).render(g);
+		}
+	}
+
+	public void updateLogs(float delta){
+		for(int i = 0; i < logs.size(); i++){
+			logs.get(i).update(delta);
 		}
 	}
 	
