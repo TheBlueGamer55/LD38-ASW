@@ -157,7 +157,6 @@ public class Shark {
 				}
 				velX = -velX;
 				level.player.deleteBridge(level.bridges.get(i));
-				System.out.println("Deleting bridge....");
 			}
 		}
 		x += velX;
