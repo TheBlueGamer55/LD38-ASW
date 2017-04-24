@@ -259,22 +259,22 @@ public class Gameplay implements GameScreen{
 			updatePeople(delta);
 
 			//Camera movement, viewport is 20 x 15 tiles, limit to current level size
-			if(Gdx.input.isKeyJustPressed(Player.LEFT)){
+			if(Gdx.input.isKeyJustPressed(Player.LEFT) || Gdx.input.isKeyJustPressed(Keys.LEFT)){
 				if(camX > 0){
 					camX -= TILE_SIZE;
 				}
 			}
-			if(Gdx.input.isKeyJustPressed(Player.RIGHT)){
+			if(Gdx.input.isKeyJustPressed(Player.RIGHT) || Gdx.input.isKeyJustPressed(Keys.RIGHT)){
 				if(camX + 20 * TILE_SIZE < currentLevel[0].length * TILE_SIZE){
 					camX += TILE_SIZE;
 				}
 			}
-			if(Gdx.input.isKeyJustPressed(Player.UP)){
+			if(Gdx.input.isKeyJustPressed(Player.UP) || Gdx.input.isKeyJustPressed(Keys.UP)){
 				if(camY > 0){
 					camY -= TILE_SIZE;
 				}
 			}
-			if(Gdx.input.isKeyJustPressed(Player.DOWN)){
+			if(Gdx.input.isKeyJustPressed(Player.DOWN) || Gdx.input.isKeyJustPressed(Keys.DOWN)){
 				if(camY + 15 * TILE_SIZE < currentLevel.length * TILE_SIZE){
 					camY += TILE_SIZE;
 				}
