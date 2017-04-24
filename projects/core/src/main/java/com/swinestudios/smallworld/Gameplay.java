@@ -183,8 +183,8 @@ public class Gameplay implements GameScreen{
 		g.drawSprite(currentMap, 0, 0);
 		
 		
-		/*g.drawRect(Gdx.input.getX() + camX, Gdx.input.getY() + camY, 8, 18);
-		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));*/
+		g.drawRect(Gdx.input.getX() + camX, Gdx.input.getY() + camY, 8, 18);
+		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));
 
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){
@@ -301,9 +301,14 @@ public class Gameplay implements GameScreen{
 
 			currentMap = map01;
 			generateSolidsFrom(currentLevel);
-			//TODO spawn sharks for new level
+			//Hard-coded shark spawns for new level
+			Shark s1 = new Shark(330, 110, this);
+			s1.velX = 0.5f;
+			Shark s2 = new Shark(610, 370, this);
+			s2.velX = 0.5f;
+			sharks.add(s1);
+			sharks.add(s2);
 			
-			//Hard-coded spawn points for each map
 			spawnPeopleFor(level01);
 		}
 		else if(levelCount == 1){
