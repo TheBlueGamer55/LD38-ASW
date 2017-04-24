@@ -44,20 +44,20 @@ public class Gameplay implements GameScreen{
 	public final int[][] level01 = {
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4,3,0,0,0,0,0,0,0,0,0,0},
 			{0,3,3,2,2,3,2,2,0,0,0,0,0,0,1,1,1,0,0,0,0,0,2,2,3,2,0},
-			{0,1,2,4,4,2,4,2,1,0,0,0,0,0,0,0,0,0,0,0,3,3,2,3,2,3,3},
-			{0,0,1,1,1,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2,4,2,1,1},
+			{0,1,2,4,4,2,4,2,1,0,0,0,0,0,0,0,0,0,0,0,3,3,4,3,2,4,3},
+			{0,0,1,1,1,4,2,1,0,0,0,0,0,0,0,0,0,0,0,1,4,1,2,4,2,1,1},
 			{0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0},
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,3,2,2,0,0,0,0,0,0,0,0,0},
-			{0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,4,4,4,3,0,0,0,0,2,1,0,0},
-			{0,0,0,0,0,0,0,0,0,0,0,0,3,4,4,4,4,4,3,0,0,0,3,3,0,0,0},
-			{0,0,0,0,3,3,3,0,0,0,0,0,1,2,1,2,1,2,1,0,0,0,3,3,0,0,0},
-			{0,0,0,3,3,3,3,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,1,2,0,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,3,4,1,4,1,4,3,0,0,0,0,2,1,0,0},
+			{0,0,0,0,0,0,0,0,0,0,0,0,3,1,4,1,4,1,3,0,0,0,3,3,0,0,0},
+			{0,0,0,0,3,3,3,0,0,0,0,0,1,2,1,2,1,2,1,0,0,0,4,3,0,0,0},
+			{0,0,0,3,3,4,3,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,1,2,0,0,0},
 			{0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
 			{0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 			{0,0,0,0,3,4,3,3,0,0,0,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0},
-			{0,0,1,2,2,2,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0},
+			{0,0,1,2,2,2,1,1,0,0,0,0,0,0,0,1,1,4,1,1,0,0,0,0,0,0,0},
 			{0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0},
 			{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
 	};
@@ -146,15 +146,22 @@ public class Gameplay implements GameScreen{
 
 		currentMap = map00;
 		generateSolidsFrom(currentLevel);
+		people.add(new Person(190, 160, 'x', this));
+		people.add(new Person(150, 200, 'x', this));
+		people.add(new Person(142, 114, 'x', this));
+		people.add(new Person(102, 158, 'x', this));
+		people.add(new Person(215, 223, 'x', this));
+		
+		people.add(new Person(437, 90, 'x', this));
+		people.add(new Person(490, 112, 'x', this));
+		people.add(new Person(460, 230, 'x', this));
+		
+		people.add(new Person(226, 380, 'x', this));
+		people.add(new Person(313, 386, 'x', this));
 		
 		Shark testShark = new Shark(320, 240, this);
 		testShark.velX = 0.5f;
 		sharks.add(testShark);
-		
-		Person randPerson = new Person(190, 220, 'x', this);
-		people.add(randPerson);
-		people.add(new Person(190, 160, 'x', this));
-		people.add(new Person(150, 200, 'x', this));
 
 		player = new Player(320, 240, this);
 		camX = player.x - Gdx.graphics.getWidth() / 2;
@@ -174,6 +181,10 @@ public class Gameplay implements GameScreen{
 		g.translate((float) Math.round(camX), (float) Math.round(camY));
 
 		g.drawSprite(currentMap, 0, 0);
+		
+		
+		/*g.drawRect(Gdx.input.getX() + camX, Gdx.input.getY() + camY, 8, 18);
+		System.out.println((Gdx.input.getX() + camX) + ", " + (Gdx.input.getY() + camY));*/
 
 		//Solids rendering 
 		for(int i = 0; i < solids.size(); i++){
@@ -290,7 +301,10 @@ public class Gameplay implements GameScreen{
 
 			currentMap = map01;
 			generateSolidsFrom(currentLevel);
-			//TODO spawn sharks for new level, spawn people for new level
+			//TODO spawn sharks for new level
+			
+			//Hard-coded spawn points for each map
+			spawnPeopleFor(level01);
 		}
 		else if(levelCount == 1){
 			System.out.println("Game won!");
@@ -372,6 +386,18 @@ public class Gameplay implements GameScreen{
 				if(map[i][j] > 0){
 					Block s = new Block(j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE, this);
 					solids.add(s);
+				}
+			}
+		}
+	}
+	
+	public void spawnPeopleFor(int[][] map){
+		//Random spawning based on tiles
+		for(int i = 0; i < map.length; i++){
+			for(int j = 0; j < map[i].length; j++){
+				if(map[i][j] == 4){
+					Person randPerson = new Person(j*TILE_SIZE, i*TILE_SIZE, 'x', this);
+					people.add(randPerson);
 				}
 			}
 		}

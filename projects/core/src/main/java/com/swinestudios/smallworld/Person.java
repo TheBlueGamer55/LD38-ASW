@@ -124,8 +124,8 @@ public class Person{
 					dy = 1;
 				}
 				int[][] mapData = level.currentLevel;
-				int mx = (int) ((this.x + 4 + (int) level.camX) / Gameplay.TILE_SIZE);
-				int my = (int) ((this.y + 4 + (int) level.camY)/ Gameplay.TILE_SIZE);
+				int mx = (int) ((this.x + 4) / Gameplay.TILE_SIZE);
+				int my = (int) ((this.y + 4)/ Gameplay.TILE_SIZE);
 				mx += dx;
 				my += dy;
 				if(mx >= 0 && my >= 0 && mx < mapData[0].length && my < mapData.length){

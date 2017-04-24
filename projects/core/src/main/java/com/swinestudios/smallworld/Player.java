@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 
 public class Player implements InputProcessor{ 
 
@@ -47,12 +46,12 @@ public class Player implements InputProcessor{
 	}
 
 	public void render(Graphics g){
-		g.setColor(Color.GREEN);
-		g.drawRect(x, y, hitbox.getWidth(), hitbox.getHeight());
+		//g.setColor(Color.GREEN);
+		//g.drawRect(x, y, hitbox.getWidth(), hitbox.getHeight());
 	}
 
 	public void update(float delta){
-		playerMovement();
+		//playerMovement();
 
 		if(!Gdx.input.isKeyPressed(LEFT) && !Gdx.input.isKeyPressed(RIGHT)){
 			velX = 0;
@@ -186,10 +185,10 @@ public class Player implements InputProcessor{
 				else{
 					System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
 				}
-				//TODO debug print remove later
-				System.out.println("=================================");
+				//debug print remove later
+				/*System.out.println("=================================");
 				System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-				level.printMapData();
+				level.printMapData();*/
 			}
 		}
 	}
@@ -239,13 +238,12 @@ public class Player implements InputProcessor{
 							if(!level.movingToNextLevel){
 								level.movingToNextLevel = true;
 							}
-							//level.moveToNextLevel();
 						}
 
-						//TODO debug print remove later
-						System.out.println("=================================");
+						//debug print remove later
+						/*System.out.println("=================================");
 						System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-						level.printMapData();
+						level.printMapData();*/
 					}
 				}
 			}
@@ -276,10 +274,10 @@ public class Player implements InputProcessor{
 							else{
 								System.out.println("Error in attempting to remove bridge at cell " + mx + ", " + my);
 							}
-							//TODO debug print remove later
-							System.out.println("=================================");
+							//debug print remove later
+							/*System.out.println("=================================");
 							System.out.println("# of islands: " + level.countIslands(level.currentLevel));
-							level.printMapData();
+							level.printMapData();*/
 						}
 					}
 				}
