@@ -234,11 +234,13 @@ public class Player implements InputProcessor{
 						}
 						level.bridges.add(newBridge);
 						level.bridgeCount++;
+						level.totalBridgesUsed++;
 						buildSfx.play(0.75f);
 						//If all islands connected, move to next level
 						if(level.countIslands(level.currentLevel) == 1){
 							if(!level.movingToNextLevel){
 								level.movingToNextLevel = true;
+								Gameplay.score += level.bridgeCount * 5;
 							}
 						}
 

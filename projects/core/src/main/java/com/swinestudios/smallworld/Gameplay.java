@@ -21,7 +21,8 @@ public class Gameplay implements GameScreen{
 
 	public static int ID = 2;
 	
-	public static int score; 
+	public static int score;
+	public int totalBridgesUsed;
 	public static int minCost = 999999999;
 
 	public static final int TILE_SIZE = 32;
@@ -71,6 +72,7 @@ public class Gameplay implements GameScreen{
 
 	public boolean paused = false;
 	public boolean gameOver = false;
+	public boolean gameWon = false;
 	public boolean movingToNextLevel = false;
 
 	public float camX, camY;
@@ -83,7 +85,7 @@ public class Gameplay implements GameScreen{
 	public Sprite map00, map01;
 	public Sprite currentMap;
 	
-	public Sprite scoreMenu, pauseMenu;
+	public Sprite scoreMenu, pauseMenu, finalScoreMenu;
 
 	public Sprite bridgeTile;
 	public boolean bridgeSelected;
@@ -102,6 +104,7 @@ public class Gameplay implements GameScreen{
 		
 		scoreMenu = new Sprite(new Texture(Gdx.files.internal("level_score_menu.png")));
 		pauseMenu = new Sprite(new Texture(Gdx.files.internal("pause_menu.png")));
+		finalScoreMenu = new Sprite(new Texture(Gdx.files.internal("final_score_menu.png")));
 
 		map00 = new Sprite(new Texture(Gdx.files.internal("level00.png")));
 		map01 = new Sprite(new Texture(Gdx.files.internal("level01.png")));
@@ -127,6 +130,7 @@ public class Gameplay implements GameScreen{
 	public void postTransitionOut(Transition t){
 		paused = false;
 		gameOver = false;
+		gameWon = false;
 		bridgeSelected = false;
 		movingToNextLevel = false;
 		score = 0;
@@ -136,10 +140,12 @@ public class Gameplay implements GameScreen{
 	public void preTransitionIn(Transition t){
 		paused = false;
 		gameOver = false;
+		gameWon = false;
 		bridgeSelected = true;
 		movingToNextLevel = false;
 		levelCount = 0;
 		bridgeCount = 0;
+		totalBridgesUsed = 0;
 		score = 0;
 		bridges.clear();
 		solids.clear();
@@ -167,9 +173,6 @@ public class Gameplay implements GameScreen{
 		
 		people.add(new Person(226, 380, 'x', this));
 		people.add(new Person(313, 386, 'x', this));
-		
-		//TODO test remove later
-		logs.add(new Wood(157, 159, this));
 		
 		Shark testShark = new Shark(320, 240, this);
 		testShark.velX = 0.5f;
@@ -226,7 +229,6 @@ public class Gameplay implements GameScreen{
 			//g.drawString("BRIDGES USED: " + bridges.size(), middleX + camX + 142, middleY + camY + 117);
 			g.drawString(bridgeCount + "", middleX + 156, middleY + 67);
 			g.drawString((bridgeCount * 5) + "", middleX + 128, middleY + 117);
-			score += bridgeCount * 5;
 		}
 		if(paused){
 			//g.setColor(Color.RED);
@@ -235,6 +237,13 @@ public class Gameplay implements GameScreen{
 			float middleY = Gdx.graphics.getHeight() / 2 - pauseMenu.getHeight() / 2 + camY;
 			g.drawSprite(pauseMenu, middleX, middleY);
 		}
+		if(gameWon){
+			float middleX = Gdx.graphics.getWidth() / 2 - finalScoreMenu.getWidth() / 2 + camX;
+			float middleY = Gdx.graphics.getHeight() / 2 - finalScoreMenu.getHeight() / 2 + camY;
+			g.drawSprite(finalScoreMenu, middleX, middleY);
+			g.drawString(totalBridgesUsed + "", middleX + 82, middleY + 100);
+			g.drawString(score + "", middleX + 82, middleY + 155);
+		}
 		if(gameOver){
 			g.drawString("Game over! Press Escape to go back to the main menu", camX + 160, camY + 240);
 		}
@@ -242,7 +251,7 @@ public class Gameplay implements GameScreen{
 
 	@Override
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
-		if(!paused && !gameOver && !movingToNextLevel){
+		if(!paused && !gameOver && !gameWon && !movingToNextLevel){
 			player.update(delta);
 			updateSharks(delta);
 			updateBridges(delta);
@@ -282,9 +291,14 @@ public class Gameplay implements GameScreen{
 					sm.enterGameScreen(MainMenu.ID, new FadeOutTransition(), new NullTransition());
 				}
 			}
+			else if(gameWon){
+				if(Gdx.input.isKeyJustPressed(Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Keys.ENTER)){
+					sm.enterGameScreen(MainMenu.ID, new NullTransition(), new NullTransition());
+				}
+			}
 			else if(paused){
 				if(Gdx.input.isKeyJustPressed(Keys.Y)){
-					sm.enterGameScreen(MainMenu.ID, new FadeOutTransition(), new NullTransition());
+					sm.enterGameScreen(MainMenu.ID, new NullTransition(), new NullTransition());
 				}
 				if(Gdx.input.isKeyJustPressed(Keys.N)){
 					paused = false;
@@ -292,7 +306,7 @@ public class Gameplay implements GameScreen{
 			}
 			else if(movingToNextLevel){
 				if(Gdx.input.isKeyJustPressed(Keys.ENTER)){
-					MainMenu.selectSound.play(); //TODO start of level sound?
+					MainMenu.selectSound.play();
 					moveToNextLevel();
 				}
 			}
@@ -328,10 +342,10 @@ public class Gameplay implements GameScreen{
 			spawnPeopleFor(level01);
 		}
 		else if(levelCount == 1){
-			System.out.println("Game won!");
 			if(score < minCost){
 				minCost = score;
 			}
+			gameWon = true;
 		}
 	}
 
